@@ -39,10 +39,10 @@ var sendTwilioMessages = function(userName, recipients) {
 var sendMessagesAndDelete = function(userName, recipients, reqSnapshot) {
 	try {
 		sendTwilioMessages(userName, recipients);
+		reqSnapshot.ref().remove();
 	} catch (e) {
 		console.log("Error sending messages!");
 	}
-	reqSnapshot.ref().remove();
 }
 
 var callback_objs = [];
@@ -59,7 +59,7 @@ timerRequestsRef.on('child_added', function(newValue) {
 		try {
 			callback_objs[newValue.name()] = setTimeout(sendMessagesAndDelete, request['length'], settings['firstName'], settings['contacts'], newValue)
 			if (callback_objs[newValue.name()]) {
-				newValue.ref().update({'state': 'SERVER_TIMER_SET'});
+				newValue.ref().update({'serverReceived': True});
 				console.log("Adding message timer");
 			}
 		} catch (e) {
