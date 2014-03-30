@@ -36,7 +36,6 @@ var sendTwilioMessages = function(userName, recipients) {
 	});
 }
 
-// TODO (jmagnarelli): come up with a better way to store these
 var callback_objs = [];
 
 var timerRequestsRef = firebase.child('timerRequests');
