@@ -59,7 +59,7 @@ timerRequestsRef.on('child_added', function(newValue) {
 		try {
 			callback_objs[newValue.name()] = setTimeout(sendMessagesAndDelete, request['length'], settings['firstName'], settings['contacts'], newValue)
 			if (callback_objs[newValue.name()]) {
-				newValue.ref().update({'serverReceived': true});
+				newValue.ref().update({'state': 'SERVER_RECEIVED_REQUEST'});
 				console.log("Adding message timer");
 			}
 		} catch (e) {
