@@ -36,6 +36,15 @@ var sendTwilioMessages = function(userName, recipients) {
 	});
 }
 
+var sendMessagesAndDelete = function(userName, recipients, reqSnapshot) {
+	try {
+		sendTwilioMessages(userName, recipients);
+	} catch (e) {
+		console.log("Error sending messages!");
+	}
+	reqSnapshot.ref().remove();
+}
+
 var callback_objs = [];
 
 var timerRequestsRef = firebase.child('timerRequests');
@@ -45,19 +54,29 @@ var userSettingsRef = firebase.child('userSettings');
 
 timerRequestsRef.on('child_added', function(newValue) {
 	userSettingsRef.child(newValue.name()).on('value', function(snapshot) {
-		callback_objs[newValue.name()] = setTimeout(sendTwilioMessages, newValue.val()['length'], snapshot.val()['firstName'], snapshot.val()['contacts'])
-		if (callback_objs[newValue.name()]) {
-			newValue.ref().update({'state': 'SERVER_TIMER_SET'});
-			console.log("Adding message timer");
+		settings = snapshot.val()
+		request = newValue.val()
+		try {
+			callback_objs[newValue.name()] = setTimeout(sendMessagesAndDelete, request['length'], settings['firstName'], settings['contacts'], newValue)
+			if (callback_objs[newValue.name()]) {
+				newValue.ref().update({'state': 'SERVER_TIMER_SET'});
+				console.log("Adding message timer");
+			}
+		} catch (e) {
+			console.log("Oh no, an exception!" + e);
 		}
 	})
 });
 
 timerRequestsRef.on('child_removed', function(snapshot) {
 	if (callback_objs[snapshot.name()] != undefined) {
-		clearTimeout(callback_objs[snapshot.name()]);
-		delete callback_objs[snapshot.name()]; // Otherwise we'll loop forever
-		console.log("Removing message timer");
+		try {
+			clearTimeout(callback_objs[snapshot.name()]);
+			delete callback_objs[snapshot.name()]; // Otherwise we'll loop forever
+			console.log("Removing message timer");
+		} catch (e) {
+			console.log("Oh no, an exception1! + e");
+		}
 	}
 });
 
