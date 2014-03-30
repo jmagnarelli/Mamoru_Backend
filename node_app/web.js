@@ -30,7 +30,7 @@ var sendTwilioMessages = function(userName, recipients) {
 		twilioClient.sms.messages.create({
 		    to: recipient['number'],
 		    from: twilioSecrets.fromNumber,
-		    body: buildEmergencyMessage(userName, recipient['name'])
+		    body: buildEmergencyMessage(recipient['name'], userName)
 		});
 		console.log("Sent message");
 	});
@@ -45,7 +45,7 @@ var userSettingsRef = firebase.child('userSettings');
 
 timerRequestsRef.on('child_added', function(newValue) {
 	userSettingsRef.child(newValue.name()).on('value', function(snapshot) {
-		callback_objs[newValue.name()] = setTimeout(sendTwilioMessages, newValue.val()['timerLength'], snapshot.val()['firstName'], snapshot.val()['contacts'])
+		callback_objs[newValue.name()] = setTimeout(sendTwilioMessages, newValue.val()['length'], snapshot.val()['firstName'], snapshot.val()['contacts'])
 		if (callback_objs[newValue.name()]) {
 			newValue.ref().update({'state': 'SERVER_TIMER_SET'});
 			console.log("Adding message timer");
