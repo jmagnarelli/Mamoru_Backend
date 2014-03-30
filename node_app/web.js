@@ -46,6 +46,7 @@ var sendMessagesAndDelete = function(userName, recipients, reqSnapshot) {
 }
 
 var callback_objs = [];
+var hacky_hack = [];
 
 var timerRequestsRef = firebase.child('timerRequests');
 
@@ -53,7 +54,12 @@ var timerRequestsRef = firebase.child('timerRequests');
 var userSettingsRef = firebase.child('userSettings');
 
 timerRequestsRef.on('child_added', function(newValue) {
+	hacky_hack[newValue.name()] = true;
 	userSettingsRef.child(newValue.name()).on('value', function(snapshot) {
+		if (!hacky_hack[snapshot.name()]) {
+			//If we didn't get here from above, bail
+			return;
+		}
 		settings = snapshot.val()
 		request = newValue.val()
 		try {
@@ -73,6 +79,7 @@ timerRequestsRef.on('child_removed', function(snapshot) {
 		try {
 			clearTimeout(callback_objs[snapshot.name()]);
 			delete callback_objs[snapshot.name()]; // Otherwise we'll loop forever
+			delete hacky_hack[snapshot.name()];
 			console.log("Removing message timer");
 		} catch (e) {
 			console.log("Oh no, an exception1! + e");
