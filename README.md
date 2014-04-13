@@ -1,7 +1,7 @@
 Mamoru
 ============
 
-Mamoru means "to protect" in Japanese. Use Mamoru to set a timer. If you don't
+[Mamoru](http://www.mamoru.co) means "to protect" in Japanese. Use Mamoru to set a timer. If you don't
 check back in before the time is up, Mamoru lets your contacts know something
 might be wrong.
 
